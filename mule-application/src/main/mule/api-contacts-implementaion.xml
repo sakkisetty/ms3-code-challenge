@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="implementation.get-contacts" doc:id="affa46e5-6d96-4ebd-945d-03b32f193bba">
+		<ee:transform doc:name="Query Payload"
+			doc:id="d19d865b-c5b2-4de1-96cf-3787f37dffdc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_SELECT_ALL_CONTACTS'),
+	params:{
+	offset: if (attributes.queryParams.offset != null) attributes.queryParams.offset as Number else 0,
+	limit : if (attributes.queryParams.limit != null) attributes.queryParams.limit as Number else 100
+		
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="offset"><![CDATA[
+ if (attributes.queryParams.offset != null) attributes.queryParams.offset else 0]]></ee:set-variable>
+				<ee:set-variable variableName="limit"><![CDATA[ if (attributes.queryParams.limit != null) attributes.queryParams.limit else 100]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="db-read" doc:id="9bf36f8d-13a1-45d6-b2e8-77fa929b3fd9"
+			name="db-readFlow" target="sql_result" targetValue="#[payload]" />
+		<ee:transform doc:name="DB to Json"
+			doc:id="bc6e05df-44b8-476b-82fd-39e12876f1ff">
+			<ee:message>
+				<ee:set-payload resource="dwl\db2json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<error-handler>
+			<on-error-propagate enableNotifications="true"
+				logException="true" doc:name="On Error Propagate" doc:id="812db8ec-f7ee-4f3e-8021-76fd28f94709"
+				type="ANY">
+				<raise-error doc:name="Raise error"
+					doc:id="a4dc404d-366e-4b3f-ac53-0b18a5da84ba" description="#[error.detailedDescription]"
+					type="CONTACTS:GET-ERROR" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementaion-get-contact" doc:id="025f999a-0a05-4f1c-b03a-2d7a8e0b8733">
+		<ee:transform doc:name="Query Payload"
+			doc:id="fb9bf3e5-7b49-478c-9a89-ddbba6da6283">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_SELECT_CONTACT'),
+	params:{
+			"Id": attributes.uriParams.Id
+		}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="offset"><![CDATA[
+ if (attributes.queryParams.offset != null) attributes.queryParams.offset else 0]]></ee:set-variable>
+				<ee:set-variable variableName="limit"><![CDATA[ if (attributes.queryParams.limit != null) attributes.queryParams.limit else 100]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="db-read" doc:id="1322ea52-1d65-4b46-8e0b-4963726b5759"
+			name="db-readFlow" target="sql_result" targetValue="#[payload]" />
+		<ee:transform doc:name="DB to Json"
+			doc:id="b3008fc8-f145-4c81-89e0-6a651d23c2cf">
+			<ee:message>
+				<ee:set-payload resource="dwl\db2json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<error-handler>
+			<on-error-propagate enableNotifications="true"
+				logException="true" doc:name="On Error Propagate" doc:id="583664bf-5c67-495a-8865-09b32faef422"
+				type="ANY">
+				<raise-error doc:name="Raise error"
+					doc:id="647b7cb4-4d1f-4df3-ae67-36afbdb70820" type=" CONTACTS:GET-ERROR"
+					description="#[error.detailedDescription]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementaion-update-contact" doc:id="01d7901c-c3f8-420c-89d6-0f9e8fe2be43">
+		<set-variable value="#[payload]" doc:name="contact = payload"
+			doc:id="37420b16-4b04-4a66-88af-4abd120d6c0a" variableName="contact" />
+		<ee:transform doc:name="SQL &amp; Params"
+			doc:id="243201cb-9df2-4216-969d-bbbdb7fdbcf6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_UPDATE_CONTACTS_TABLE'),
+	
+	params:
+	{
+		'FirstName':payload.payload.Identification.FirstName,
+		'LastName': payload.payload.Identification.LastName,
+		'DOB' :  payload.payload.Identification.DOB as Date {format: 'MM/dd/yyyy'},
+		'Gender' : payload.payload.Identification.Gender ,
+		'Title':payload.payload.Identification.Title,
+		'id' : vars.contact.id as Number
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="db - update" doc:id="dd6b3ff6-6d39-4e2d-9d9d-e01447a3167e"
+			name="db-update" />
+		<scatter-gather doc:name="Scatter-Gather"
+			doc:id="bc8b74d1-3e4d-4ecd-a536-49b1a7f70aac">
+			<route>
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="e3246c9f-a8f1-438e-b1a7-e0d89debbbdf">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_DELETE_ADDRESSES_TABLE'),
+	params:
+	{
+		id: vars.contact.id as String
+	}
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="db - delete" doc:id="a9cc2a1c-8193-4de4-aa63-9975a459b25c"
+					name="db-delete" />
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="0481ca03-2703-4d21-8da6-a23df172e3fd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_INSERT_ADDRESSES_TABLE'),
+	
+	params:
+	vars.contact.payload.Address map (value, index) ->
+	{
+		'identification_id' : vars.contact.id,
+		'type': value.'type ',
+		'number': value.number,
+		
+		'street' : value.street ,
+		'Unit': value.Unit ,
+		'City' : value.City,
+		'State':value.State ,
+		'zipcode' :value.zipcode	
+	}
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Address db-insert" doc:id="8cd1c14f-dfda-4fb1-9ee7-583b0dc91859"
+					name="db-insert-bulk-Flow" />
+			</route>
+			<route>
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="2378513d-9f70-4a49-9973-14a92be1b456">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_DELETE_COMMUNICATION_TABLE'),
+	params:
+	{
+		id: vars.contact.id as String
+	}
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="db - delete" doc:id="db9bd387-7dcb-4d2a-9e3c-372e17148a96"
+					name="db-delete" />
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="3b7fb2fa-cc19-4212-af41-b1b4c376d6d7">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_INSERT_COMMUNICATION_TABLE'),
+	
+	params:
+	vars.contact.payload.Communication map (value, index) ->
+	{
+		'identification_id' : vars.contact.id,
+		'type': value.'type',
+		'value': value.value,
+		'preferred' :  if (value.preferred == null) 0 else ( if (value.preferred == "true") 1 else 0) ,
+
+	}
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Communication db-insert" doc:id="4a1d5b7c-8009-4065-9563-4ca0202af068"
+					name="db-insert-bulk-Flow" />
+			</route>
+		</scatter-gather>
+		<error-handler>
+			<on-error-propagate enableNotifications="true"
+				logException="true" doc:name="On Error Propagate" doc:id="81aec2d6-ef7d-417e-8fb8-572b2231af02"
+				type="ANY">
+				<raise-error doc:name="Raise error"
+					doc:id="e26bfd12-0721-45a8-b94b-4da170f2f09c" type="CONTACTS:UPDATE-ERROR"
+					description="#[error.detailedDescription]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementaion-create-contact" doc:id="93c4c8bf-926a-4cd7-96f8-34c92dd077d2">
+		<set-variable value="#[payload]" doc:name="contacts = payload"
+			doc:id="3371bf09-a0fc-4ffd-8603-083fec3685d8" variableName="contact" />
+		<ee:transform doc:name="SQL &amp; Params"
+			doc:id="3b97c7cc-8cf4-4d39-a7b0-88e909114a7b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_INSERT_CONTACTS_TABLE'),
+	
+	params:
+	{
+		'FirstName':payload.Identification.FirstName,
+		'LastName': payload.Identification.LastName,
+		'DOB' :  payload.Identification.DOB as Date {format: 'MM/dd/yyyy'},
+		'Gender' : payload.Identification.Gender ,
+		'Title':payload.Identification.Title 
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Contacts db-insert" doc:id="253ab767-720b-4632-bf6f-43e0e1299c04"
+			name="db-insert-Flow" target="sql_insert_key" targetValue="#[payload.inserted_key]" />
+		<scatter-gather doc:name="Scatter-Gather"
+			doc:id="d3fd4dbd-2c6e-4e56-8ae7-7007a705c503">
+			<route>
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="1ea15207-5b67-4b64-929c-ffbc9783643b">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_INSERT_ADDRESSES_TABLE'),
+	
+	params:
+	vars.contact.Address map (value, index) ->
+	{
+		'identification_id' : vars.sql_insert_key,
+		'type': value.'type ',
+		'number': value.number,
+		
+		'street' : value.street ,
+		'Unit': value.Unit ,
+		'City' : value.City,
+		'State':value.State ,
+		'zipcode' :value.zipcode	
+	}
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Address db-insert" doc:id="5fc88916-86e3-46e8-87a1-0bcf84e3694c"
+					name="db-insert-bulk-Flow" />
+			</route>
+			<route>
+				<ee:transform doc:name="SQL &amp; Params"
+					doc:id="0e02784a-56e7-41c6-af07-fea45d9e4036">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_INSERT_COMMUNICATION_TABLE'),
+	
+	params:
+	vars.contact.Communication map (value, index) ->
+	{
+		'identification_id' : vars.sql_insert_key,
+		'type': value.'type',
+		'value': value.value,
+		'preferred' :  if (value.preferred == null) 0 else ( if (value.preferred == "true") 1 else 0) ,
+
+	}
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Communication db-insert" doc:id="806b0586-caf9-4dc4-b37c-5a9ad6dc121a"
+					name="db-insert-bulk-Flow" />
+			</route>
+		</scatter-gather>
+		<error-handler>
+			<on-error-propagate enableNotifications="true"
+				logException="true" doc:name="On Error Propagate" doc:id="53a45249-72a2-4366-8d48-d45bc819274e"
+				type="ANY">
+				<raise-error doc:name="Raise error"
+					doc:id="531ca2b4-f091-4e9e-bc28-9621946aa153" type="CONTACTS:CREATE-ERROR"
+					description="#[error.detailedDescription]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementaion-delete-contact" doc:id="c2291a79-6a73-493f-9e62-288fe170b8cf">
+		<set-variable value="#[payload]" doc:name="contact = payload"
+			doc:id="9e8bc738-0b4f-40a3-af54-c031e32f8fdb" variableName="contact" />
+		<ee:transform doc:name="is_exist = false"
+			doc:id="ea5e2b6c-8566-4eea-af55-edb736f2ed24">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="is_exist"><![CDATA[false]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="SQL &amp; Params" doc:id="c5b7352d-49f5-4f07-8d78-d36509b2acc2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_DELETE_COMMUNICATION_TABLE'),
+	
+	params:
+	{
+		id : vars.contact.id
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="db - delete" doc:id="ae9d9bfb-ee9f-4afc-a610-2f66c3752e12" name="db-delete" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f9ce6989-a8ef-48ec-a5a2-b9068589c231" >
+			<route >
+				<ee:transform doc:name="SQL &amp; Params" doc:id="f2b69feb-1f4b-4acf-86b0-6ac4f4a960ca">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_DELETE_ADDRESSES_TABLE'),
+	
+	params:
+	{
+		id : vars.contact.id
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<flow-ref doc:name="db - delete" doc:id="72cab37e-f819-4025-9bc6-e2346e4dcaf5" name="db-delete" />
+			</route>
+			<route >
+				<ee:transform doc:name="SQL &amp; Params" doc:id="047dac3d-99c2-463d-a01c-aa6c10a150c9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_DELETE_CONTACTS_TABLE'),
+	
+	params:
+	{
+		id : vars.contact.id
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<flow-ref doc:name="db - delete" doc:id="721475a4-3c82-447d-868c-e0f4285104e3" name="db-delete" />
+			</route>
+		</scatter-gather>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f383e73b-19fb-4683-9987-a919e1ff6f92" type="ANY">
+				<raise-error doc:name="Raise error" doc:id="58339d3d-3c8e-4aac-bf3b-12bfd98592a9" type="CONTACTS:DELETE-ERROR" description="#[error.detailedDescription]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="implementaion-search-name" doc:id="09ea4fc7-f99f-49d3-b4f8-76504457f8fa" >
+		<ee:transform doc:name="SQL &amp; Params" doc:id="209fd341-e478-4e62-bc22-3908d65c2bc2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	sql : p('SQL_SELECT_CONTACTS_WRT_NAME'),
+	
+	params:
+	{
+		name : payload.name
+	}
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="db-read" doc:id="55bc32bf-cb95-406f-a077-8df7df1f53e5" name="db-readFlow" target="sql_result" targetValue="#[payload]" />
+		<ee:transform doc:name="DB to Json" doc:id="5affa9bf-bc14-4b2e-8561-2f8ba1658dc8" >
+			<ee:message >
+				<ee:set-payload resource="dwl\db2json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="592efc99-aae3-412a-b671-a04a4dcb097a" type="ANY">
+				<raise-error doc:name="Raise error" doc:id="c5f5f9d0-bad1-4785-aeac-ed4d0f220a2f" type="CONTACTS:NAMESEARCH-ERROR" description="#[error.detailedDescription]" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

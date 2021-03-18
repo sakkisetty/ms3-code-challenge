@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="api-contacts-test-suite.xml" />
+	<munit:test name="api-contacts-test-suite-get:\contacts:contacts-configTest" doc:id="d61ddcf3-b73a-49bb-8b0c-c6e3687eaa26" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\contacts:contacts-config" doc:id="e29bb069-43ee-4006-b094-d692094188e0" name="get:\contacts:contacts-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="934dd2df-cc41-4179-b60f-5e90768f7c06" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Get failed" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="api-contacts-test-suite-get:\contacts\(Id):contacts-configTest" doc:id="ab3f2838-e10a-411c-9fcd-0e194cf9ffe6" description="Test">
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="5c200692-ff29-4d5c-b426-8f2755ad3be4" >
+				<ee:message >
+					<ee:set-attributes ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	uriParams:{
+		Id: 4
+	}
+}]]></ee:set-attributes>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to get:\contacts\(Id):contacts-config" doc:id="9831ad04-438c-4dd1-b7f0-ed19c0a99832" name="get:\contacts\(Id):contacts-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="03512b5a-49c2-4d44-9a8a-d855816dc8d5" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Get failed" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

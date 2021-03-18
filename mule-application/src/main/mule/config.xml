@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:cors="http://www.mulesoft.org/schema/mule/cors" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="78bdd4c0-71e1-4fce-8ca4-991b60a648c1" file="${env}-config.properties" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="51a2182d-03b9-4a08-baf3-c0407fd27904" file="sql-strings.properties" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="491b2762-eb5d-4302-9046-e18824e388b2" file="resource.properties" />
+
+	<secure-properties:config name="Secure_Properties_Config"
+		doc:name="Secure Properties Config" doc:id="045b0ac1-d377-4bd4-8b01-f3e64790b98c"
+		file="${env}-config.properties" key="${security.key}">
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+
+
+
+	<http:listener-config name="api-template-httpListenerConfig">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+		<http:listener-interceptors>
+			<http:cors-interceptor allowCredentials="true">
+				<http:origins>
+					<http:public-resource />
+				</http:origins>
+			</http:cors-interceptor>
+		</http:listener-interceptors>
+	</http:listener-config>
+   <apikit:config name="contacts-config" api="contacts.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+
+	<apikit:config name="api-contacts-config" api="api/contacts.raml"
+		outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+
+	<db:config name="Database_Config" doc:name="Database Config"
+		doc:id="e01a74dc-60d8-4ecb-b98f-7efd5c7257bd">
+		<db:my-sql-connection host="${database.mysql.server}"
+			port="${database.mysql.port}" user="${database.mysql.user}"
+			password="${secure::database.mysql.password}" database="${database.mysql.db}">
+			<reconnection failsDeployment="true" />
+		</db:my-sql-connection>
+	
+</db:config>
+
+	<configuration doc:name="Configuration"
+		doc:id="0dba78f8-626f-41c8-ba14-67a45fd541a8" defaultErrorHandler-ref="sys-api-Error_Handler" />
+</mule>

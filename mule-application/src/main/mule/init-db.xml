@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="init-dbFlow" doc:id="c85dbed1-26b4-4356-954c-f972b79271d7" >
+		<scheduler doc:name="Scheduler" doc:id="07d6f739-08a7-4f6d-87d6-362ffa5ba5ea" >
+			<scheduling-strategy >
+				<fixed-frequency timeUnit="DAYS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<db:execute-script doc:name="Execute script" doc:id="9eb49d71-3989-4756-bec4-d9fecc73a1bc" config-ref="Database_Config">
+			<db:sql >CREATE TABLE IF NOT EXISTS    contacts(
+    identification_id INT PRIMARY KEY AUTO_INCREMENT,
+	FirstName VARCHAR(255) NOT NULL,
+	LastName VARCHAR(255) NOT NULL,
+	DOB DATE NOT NULL,
+	Gender VARCHAR(255) NOT NULL,
+	Title VARCHAR(255) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS communications (
+    communication_id INT AUTO_INCREMENT,
+	identification_id INT ,
+    type VARCHAR(255) NOT NULL,
+	value VARCHAR(255) NOT NULL,
+	preferred BOOLEAN NOT NULL DEFAULT FALSE,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (communication_id , identification_id),
+    FOREIGN KEY (identification_id)
+        REFERENCES contacts (identification_id)
+        ON UPDATE RESTRICT ON DELETE CASCADE
+	
+);
+CREATE TABLE IF NOT EXISTS addresses (
+    address_id INT AUTO_INCREMENT PRIMARY KEY,
+	identification_id INT,
+	type VARCHAR(255) NOT NULL,
+	number INT NOT NULL,
+    street VARCHAR(255) NOT NULL,
+    Unit VARCHAR(255) NOT NULL,
+	City VARCHAR(255) NOT NULL,
+    State VARCHAR(255) NOT NULL,
+    zipcode VARCHAR(255) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (identification_id)
+        REFERENCES contacts (identification_id)
+        ON UPDATE RESTRICT ON DELETE CASCADE
+);
+</db:sql>
+		</db:execute-script>
+	</flow>
+</mule>

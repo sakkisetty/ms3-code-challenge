@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:cors="http://www.mulesoft.org/schema/mule/cors" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd   http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="contacts-main">
+		<http:listener config-ref="api-template-httpListenerConfig"
+			path="/api/*" outputMimeType="application/json" allowedMethods="OPTIONS,GET,POST,PUT,DELETE">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger"
+			doc:id="5f44cdb1-7474-4b07-a523-a96faa7c8735"
+			message='#[%dw 2.0
+output application/java
+---
+{
+	"Requester": attributes.remoteAddress,
+	"url": attributes.requestUri,
+	"method" : attributes.method
+}]' />
+		<apikit:router config-ref="contacts-config" />
+		<logger level="INFO" doc:name="Logger"
+			doc:id="13fc2e85-4aaf-4397-889c-6170b4ca41c0"
+			message='#[%dw 2.0
+output application/json
+import * from dw::core::Strings 
+
+---
+
+{
+	"httpstaus": vars.httpstatus,
+	"Response": payload  ,
+	"method" : attributes.method
+}]' />
+	</flow>
+	<flow name="contacts-console">
+		<http:listener config-ref="api-template-httpListenerConfig"
+			path="/console/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console config-ref="contacts-config" />
+		<error-handler>
+			<on-error-propagate type="APIKIT:NOT_FOUND">
+				<ee:transform
+					xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">404
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="put:\contacts\(Id):application\json:contacts-config">
+		<ee:transform doc:name="Transform Message"
+			doc:id="363b5dbe-5230-4107-9d74-d7b9f8e6b0e8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id : attributes.uriParams.Id,
+	payload: payload
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="implementaion-update-contact" doc:id="98b07dab-ced2-4aa9-bcad-134ad0b987cd"
+			name="implementaion-update-contact" />
+		<ee:transform
+			xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+			doc:id="55b04c77-932b-43ef-bf2b-e7498052eeeb">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  	message: p('IDS_DATABASE_UPDATE_SUCCESS'), 
+ 	id : vars.contact.id,
+	payload: vars.contact.payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="delete:\contacts\(Id):contacts-config">
+		<ee:transform doc:name="Transform Message"
+			doc:id="bb068c7c-ffb8-437e-a052-464df390ea06">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id : attributes.uriParams.Id,
+	
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="implementaion-delete-contact" doc:id="c6fd90c9-e4ba-4645-9150-431a1ab2914f"
+			name="implementaion-delete-contact" />
+		<ee:transform doc:name="Transform Message"
+			doc:id="11e7c1ee-1cdf-4ed6-b4ff-7eadeaf44284">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  //	message: if (payload > 0) p('IDS_DATABASE_DELETE_SUCCESS') else p('IDS_DATABASE_DELETE_SUCCESS_1'), 
+ 	id : vars.contact.id,
+	
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpstatus"><![CDATA[if (payload==0) 404 else 204]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="get:\contacts:contacts-config">
+		<flow-ref doc:name="implementation-get-contacts" doc:id="140cf8da-0d72-4945-acf3-ffee20b8153d"
+			name="implementation.get-contacts" target="contacts" targetValue="#[payload]" />
+		<ee:transform doc:name=""
+			doc:id="05c572c6-fc84-4c51-9299-6216a7715e2e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.contacts]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="get:\contacts\name\(name):contacts-config">
+		<ee:transform doc:name="Transform Message"
+			doc:id="f45bba03-81df-4b59-87ea-ff17b64c3d9d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	name : attributes.uriParams.'name'
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="inplementation-search-name" doc:id="218d28c4-8869-422e-a569-33473ef20453"
+			name="implementaion-search-name" />
+		<ee:transform doc:name="Transform Message"
+			doc:id="aedc704a-743e-424b-a28c-8a5f9839ab60">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="get:\contacts\(Id):contacts-config">
+		<flow-ref doc:name="implementation-get-contact" doc:id="f0b87353-fd0b-4860-9dfd-0d269609249d"
+			name="implementaion-get-contact" target="contact" targetValue="#[payload]" />
+		<ee:transform doc:name="Transform Message"
+			doc:id="de9d2321-e7cc-403b-8c94-a0f18ac6a9f9">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="notfoundresponse"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : p('IDS_ID_NOT_FOUND'),
+	"id" : attributes.uriParams.Id
+}]]></ee:set-variable>
+				<ee:set-variable variableName="httpstatus"><![CDATA[if (vars.contact[0]==null) 404 else 200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform
+			xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+			doc:id="ca72aa82-cb95-494b-bf60-5ecf3db6f168">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if (vars.contact[0]==null) vars.notfoundresponse else vars.contact[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="post:\contacts:application\json:contacts-config">
+		<flow-ref doc:name="implementaion-create-contacts" doc:id="2e52c429-9e99-4cdd-808d-0d12eb4086c1"
+			name="implementaion-create-contact" />
+		<ee:transform
+			xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/cors http://www.mulesoft.org/schema/mule/cors/current/mule-cors.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+			doc:id="ab0aeefc-940a-42bc-974b-194520469afa">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: p("IDS_CONTRACT_CREATED") ++ vars.sql_insert_key
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

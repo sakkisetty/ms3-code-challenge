@@ -1,0 +1,30 @@
+#%RAML 1.0 NamedExample
+
+
+ Identification:
+    FirstName : "Bob"
+    LastName : "Frederick"
+    DOB: "06/21/1980"
+    Gender: "M"
+    Title: "Manager"
+
+ Address:
+    - 'type ' : "home"
+      number : 123456
+      street: "blah blah St"
+      Unit: "1 a"
+      City: "Somewhere"
+      State: "WV"
+      zipcode: "12345"
+ 
+ Communication:
+    - type : "email"
+      value : "bfe@sample.com"
+      preferred : "true"
+    - type : "cell"
+      value : "304-555-8282"
+ 
+ links: 
+    - rel : "contact"
+      href : "https://adventure-works.com/contacts/3"
+      action: "GET"

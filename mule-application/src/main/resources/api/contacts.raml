@@ -1,0 +1,113 @@
+#%RAML 1.0
+title: MS3 Contacts REST Services API
+version: v1
+protocols: [ HTTP ]
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/831de371-c420-4e15-b1b4-9da411381280/ # baseUri:
+mediaType: application/json
+securedBy: basicAuth
+securitySchemes:
+  basicAuth:
+    description: |
+      Each request must contain the headers necessary for
+      basic authentication
+    type: Basic Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: |
+            Used to send the Base64 encoded "username:password"
+            credentials
+            type: string
+      responses:
+        401:
+          description: |
+            Unauthorized. Either the provided username and password
+            combination is invalid, or the user is not allowed to
+            access the content provided by the requested URL.
+types:
+  contact: !include datatypes/contact.raml
+  error: !include datatypes/error.raml
+  address : !include datatypes/address.raml
+  communication : !include datatypes/communication.raml
+resourceTypes:
+  collection:
+    usage: Use this resourceType to represent a collection of items
+    description: A collection of <<resourcePathName|!uppercamelcase>>
+    get:
+      description: |
+        Get all <<resourcePathName|!uppercamelcase>>,
+        optionally filtered
+      is: [ hasResponseCollection: { typeName: <<typeName>> } ]
+      responses: 
+        200:
+          body: 
+            application/json:
+              example: 
+                      - !include examples/contact.raml
+      
+    post:
+      description: |
+        Create a new <<resourcePathName|!uppercamelcase|!singularize>>
+      is: [ hasRequestItem: { typeName: <<typeName>> } ]
+      body:
+        application/json:
+          type:
+              contact
+          example:
+            !include examples/contact.raml
+      responses:
+        201:
+          body: 
+            application/json:
+              example: |
+                {"message":"<<resourcePathName>> created"}      
+  item:
+    usage: Use this resourceType to represent any single item
+    description: A single <<typeName>>
+    get:
+      description: Get a <<typeName>>
+      is: [ hasResponseItem: { typeName: <<typeName>> }, hasNotFound ]
+    put:
+      description: Update a <<typeName>>
+      is: [ hasRequestItem: { typeName: <<typeName>> }, hasResponseItem: { typeName: <<typeName>> }, hasNotFound ]
+    delete:
+      description: Delete a <<typeName>>
+      is: [ hasNotFound ]
+      responses:
+        204:
+traits:
+  hasRequestItem:
+    body:
+      application/json:
+        type: <<typeName>>
+  hasResponseItem:
+    responses:
+      200:
+        body:
+          application/json:
+            type: <<typeName>>
+  hasResponseCollection:
+    responses:
+      200:
+        body:
+          application/json:
+            type: <<typeName>>[]
+  hasNotFound:
+    responses:
+      404:
+        body:
+          application/json:
+            type: error
+            example: !include examples/error.json
+/contacts:
+  type: { collection: { typeName: contact } }
+  get:
+    queryParameters:
+      offset?: number
+      limit?: number
+  /{Id}:
+    type: { item: { typeName: contact } }
+  /name/{name}:
+    get:
+      description: List all contacts with a certain name
+      is: [ hasResponseCollection: { typeName: contact } ]
