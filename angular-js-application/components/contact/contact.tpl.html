@@ -1,0 +1,171 @@
+<!-- @author -->
+<!DOCTYPE html5>
+<html lang="en" ng-app="contactsApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>MS3 Contacts - Home</title>
+
+</head>
+
+<body ng-app="contactsApp" ng-controller="contactController">
+    <div class="container" style="padding:10px 10px;">
+     
+        <form ng-submit="OnUpdate(contact)">
+            <table class="table table-bordered" id="tbl_contact">
+                <thead>
+                    <tr>
+                <tbody>
+                    <td>
+                        <h4>Identification</h4>
+                        <table class="table table-bordered" id="tbl_identification">
+                            <thead>
+                                <tr>
+                                    <th>FirstName</th>
+                                    <th>LastName</th>
+                                    <th>DOB</th>
+                                    <th>Gender</th>
+                                    <th>Title</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl_posts_body">
+                                <tr>
+                                    <td>
+                                        <input type="text" class="form-control"
+                                            ng-model="contact.Identification.FirstName" required /></td>
+                                    <td>
+                                        <input type="text" class="form-control"
+                                            ng-model="contact.Identification.LastName" required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="contact.Identification.DOB"
+                                            required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="contact.Identification.Gender"
+                                            required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="contact.Identification.Title"
+                                            required /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h4>Address</h4>
+                        <table class="table table-bordered" id="tbl_address">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" ng-model="selectedAllA" ng-click="checkAllA()" /></th>
+                                    <th>Type</th>
+                                    <th>Number</th>
+                                    <th>Street</th>
+                                    <th>City</th>
+                                    <th>Unit</th>
+                                    <th>State</th>
+                                    <th>zipcode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="address in contact.Address">
+                                    <td>
+                                        <input type="checkbox" ng-model="address.selected" /></td>
+
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address['type ']" required />
+                                    </td>
+                                    <td> <input type="text" class="form-control" ng-model="address.number" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address.street" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address.City" required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address.Unit" required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address.State" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="address.zipcode" required />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group">
+                            <input type="button" class="btn btn-danger pull-right" ng-click="removeAddress()"
+                                value="Remove">
+                            <input type="button" class="btn btn-primary addnew pull-right" ng-click="addAddress()"
+                                value="Add New">
+                        </div>
+                        <h4>Communication</h4>
+                        <table class="table table-bordered" id="tbl_address">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" ng-model="selectedAllB" ng-click="checkAllB()" /></th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th>Preferred</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="com in contact.Communication">
+                                    <td>
+                                        <input type="checkbox" ng-model="com.selected" /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="com.type" required /></td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-model="com.value" required /></td>
+                                    <td>
+                                        <input ng-true-value="true" ng-false-value="false" type="checkbox"
+                                            ng-model="com.preferred" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group">
+
+                            <input type="button" class="btn btn-danger pull-right" ng-click="removeCommunication()"
+                                value="Remove">
+                            <input type="button" class="btn btn-primary addnew pull-right" ng-click="addCommunication()"
+                                value="Add New">
+                        </div>
+                    </td>
+                </tbody>
+                </tr>
+                </thead>
+            </table>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary OnUpdate pull-right" value="{{mode}}">
+            </div>
+        </form>
+        <button ng-click="previous()">previous Page</button>
+    </div>
+
+
+
+</html>
+<style>
+    .selected {
+        background-color: black;
+        color: white;
+        font-weight: bold;
+    }
+
+    table,
+    input {
+
+        text-align: left;
+        font: 13px Verdana;
+    }
+
+    table,
+    td,
+    th {
+        margin: 10px 0;
+        padding: 2px 10px;
+    }
+
+    td,
+    th {
+        border: solid 1px #CCC;
+    }
+</style>

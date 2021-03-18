@@ -1,0 +1,127 @@
+<!-- @author -->
+<!DOCTYPE html5>
+<html lang="en" ng-app="contactsApp">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>MS3 Contacts - Home</title>
+
+</head>
+
+<body ng-app="contactsApp" ng-controller="homeController">
+  <header class="navbar navbar-default navbar-fixed-top menu-header">
+    <div class="navbar-header">
+      <img ng-src="images/snowballmig.png" height="45" width="300"></img>
+      <font size="5"><b>MS3 Contacts</b></font>
+  </header>
+
+  <div class="container" style="padding:10px 10px;">
+    <form ng-submit="OnAddNew()">
+      <div><input type="text" ng-model="searchText" placeholder="Enter Search Text" /></div>
+       <table class="table table-bordered" id="tbl_employees">
+        <thead>
+          <tr>
+            <th ng-click='sortColumn("Name")' ng-class='sortClass("Name")'>Name
+            </th>
+
+            <th ng-click='sortColumn("Title")' ng-class='sortClass("Title")'>Title
+            </th>
+
+            <th ng-click='sortColumn("City")' ng-class='sortClass("City")'>City
+            </th>
+
+            <th ng-click='sortColumn("Email")' ng-class='sortClass("Email")'>Contacts Email
+            </th>
+
+            <th ng-click='sortColumn("Ph")' ng-class='sortClass("Ph")'>Ph.#
+            </th>
+
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbl_posts_body">
+          <tr ng-repeat="contact in contacts|orderBy:column:reverse|filter:searchText">
+            <td>{{contact.Name}}</td>
+            <td>{{contact.Title}}</td>
+            <td>{{contact.City}}</td>
+            <td>{{contact.Email}}</td>
+            <td>{{contact.Ph}}</td>
+            <td><a class="btn btn-xs delete-record" ng-click="remove(contact)"><i
+                  class="glyphicon glyphicon-trash"></i></a>
+              <a class="btn btn-xs edit-record" ng-click="edit(contact)"><i class="glyphicon glyphicon-edit"></i></a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+      <div class="form-group">
+        <input type="submit" class="btn btn-primary OnAddNew pull-right" value="Add New">
+      </div>
+    </form>
+  </div>
+
+</body>
+
+
+</html>
+<style>
+  .selected {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+  }
+
+  table,
+  input {
+
+    text-align: left;
+    font: 13px Verdana;
+  }
+
+  table,
+  td,
+  th {
+    margin: 10px 0;
+    padding: 2px 10px;
+  }
+
+  td,
+  th {
+    border: solid 1px #CCC;
+  }
+  /*table */
+table{
+ border-collapse: collapse;
+}
+table th,table td{
+ padding: 3px;
+}
+
+table th:hover{
+ cursor: pointer;
+}
+
+.arrow-down:after,.arrow-up:after{
+ content: ' ';
+ position: relative;
+ left: 2px;
+ border: 8px solid transparent;
+}
+
+.arrow-down:after{
+ top: 10px;
+ border-top-color: black;
+}
+
+.arrow-up:after{
+ bottom: 15px;
+ border-bottom-color: black;
+}
+
+.arrow-down,.arrow-up{
+ padding-right: 10px;
+}
+</style>

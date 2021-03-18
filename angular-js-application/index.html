@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html ng-app="contactsApp">
+  <head>
+   
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css"/>
+  
+    <link href="styles-css/styles.css" rel="stylesheet">
+   
+    <link rel="shortcut icon" href="#">   
+  </head>
+ <body data-ng-app=contactsApp>
+    <header class="navbar navbar-default navbar-fixed-top menu-header">
+        <div class="navbar-header">
+        <img ng-src="images/snowballmig.png" height="45" width="300"></img>
+        <font size="5"><b>MS3 Contacts</b></font>
+        </header>
+    <div>
+			 <data-ng-view>
+
+			 </data-ng-view>
+
+	 </div>
+	
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
+    <script src="https://code.angularjs.org/1.2.12/angular-route.min.js"></script>
+    <!-- for local development -->
+    <!--
+        <script src="../lib/angular/angular.min.js"></script>
+    -->
+    <script src="app.js"></script>
+    <script src="config.srv.js"></script>
+    <script src="common.srv.js"></script>
+    <script src="components/home/home.ctr.js"></script>
+    <script src="components/home/home.srv.js"></script>
+    <script src="components/contact/contact.ctr.js"></script>
+    <script src="components/contact/contact.srv.js"></script>
+    
+    <!--
+    <script src="components/login/login.srv.js"></script>    
+    <script src="components/login/login.ctr.js"></script>    
+    <script src="components/home/tree-grid-directive.js"></script>    
+    <script src="components/home/home.srv.js"></script>
+    <script src="components/home/tree.srv.js"></script>
+    <script src="components/home/home.ctr.js"></script>
+     -->
+    <script>
+    </script>
+  </body>
+</html>

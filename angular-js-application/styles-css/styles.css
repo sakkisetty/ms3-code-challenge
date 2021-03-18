@@ -1,0 +1,328 @@
+@font-face {
+    font-family: 'opensans-regular';
+    src: url('../fonts/OpenSans-Regular.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/OpenSans-Regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/OpenSans-Regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/OpenSans-Regular.woff') format('woff'), /* Pretty Modern Browsers */
+    url('../fonts/OpenSans-Regular.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/OpenSans-Regular.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: 'opensans-light';
+    src: url('../fonts/OpenSans-Light.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/OpenSans-Light.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/OpenSans-Light.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/OpenSans-Light.woff') format('woff'), /* Pretty Modern Browsers */
+    url('../fonts/OpenSans-Light.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/OpenSans-Light.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: 'opensans-bold';
+    src: url('../fonts/OpenSans-Bold.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/OpenSans-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/OpenSans-Bold.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/OpenSans-Bold.woff') format('woff'), /* Pretty Modern Browsers */
+    url('../fonts/OpenSans-Bold.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/OpenSans-Bold.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: 'opensans-semibold';
+    src: url('../fonts/OpenSans-Semibold.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/OpenSans-Semibold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/OpenSans-Semibold.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/OpenSans-Semibold.woff') format('woff'), /* Pretty Modern Browsers */
+    url('../fonts/OpenSans-Semibold.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/OpenSans-Semibold.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+@font-face {
+    font-family: 'opensans-extrabold';
+    src: url('../fonts/OpenSans-ExtraBold.eot'); /* IE9 Compat Modes */
+    src: url('../fonts/OpenSans-ExtraBold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/OpenSans-ExtraBold.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../fonts/OpenSans-ExtraBold.woff') format('woff'), /* Pretty Modern Browsers */
+    url('../fonts/OpenSans-ExtraBold.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/OpenSans-ExtraBold.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
+html {
+    font-size: 1em;
+}
+
+body {
+    margin: 0;    
+    padding: 0;
+    padding-top: 70px;
+    padding-bottom: 40px;
+    font-family: "opensans-regular", "opensans-light", serif, Arial, Tahoma, Verdana;
+    color: #222;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+    body.login {
+        background: #428bca;
+    }
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 2em;
+}
+
+p {
+    font-size: 1.1em;
+    line-height: 1.6em;
+}
+
+input, button, a, button:focus, button:visited, input:focus {
+    font-family: "opensans-regular", "opensans-light", serif, Arial, Tahoma, Verdana;
+    outline: 0;
+}
+
+input, select, textarea {
+    color: #222;
+}
+/*
+a, a:hover, a:visited, a:focus {
+    text-decoration: none;
+    color: #fff;
+    outline: 0;
+}
+*/
+.padding-empty {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.empty-space {
+    padding: 0;
+}
+
+.center-block {
+    float: none;
+    margin: 0 auto;
+}
+
+/* Login Form */
+.vr-login {
+    width: 400px;
+    padding: 8% 0 0;
+    margin: auto;
+}
+
+    .vr-login h1 {
+        color: #fff;
+        font-size: 2.5em;
+        margin: 15px 10px;
+    }
+
+        .vr-login h1 span {
+            font-size: 0.4em;
+            margin-top: 26px;
+            color: #7eeb7d;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+.vr-form {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    max-width: 400px;
+    margin: 0 auto 100px;
+    padding: 45px;
+    text-align: center;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+    .vr-form input {
+        font-family: "Roboto", sans-serif;
+        outline: 0;
+        background: #f2f2f2;
+        width: 100%;
+        border: 0;
+        margin: 0 0 15px;
+        padding: 15px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    .vr-form button {
+        font-family: "Roboto", sans-serif;
+        text-transform: uppercase;
+        outline: 0;
+        background: #167cd4;
+        width: 100%;
+        border: 0;
+        padding: 15px;
+        color: #FFFFFF;
+        font-size: 14px;
+        -webkit-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .vr-form button:hover, .form button:active, .form button:focus {
+            background: #337ab7;
+        }
+
+    .vr-form .message {
+        margin: 15px 0 0;
+        color: #b3b3b3;
+        font-size: 12px;
+    }
+
+        .vr-form .message a {
+            color: #167cd4;
+            text-decoration: none;
+        }
+
+    .vr-form .register-form {
+        display: none;
+    }
+
+/* End Login Form */
+
+
+header {
+    width: 100%;
+    background-color: #428bca;
+    margin: 0px auto;
+    height: 50px;
+    color: #fff;
+    border: 0;
+    backface-visibility: hidden;
+}
+
+.menu-header {
+    background-color: #428bca;
+    border: 0;
+}
+
+    .menu-header a.navbar-brand, .menu-header.navbar-default .navbar-brand:hover {
+        color: #fff;
+    }
+
+    .menu-header .navbar-nav > li > a {
+        float: left;
+        padding: 15px 25px;
+        text-decoration: none;
+        font-size: 1em;
+        color: #fff;
+        transition: 0.7s;
+        font-family: "SourceSansPro-Regular", Helvetica, sans-serif, Arial, Verdana;
+        border-right: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .menu-header .navbar-nav > li > a:hover {
+            text-decoration: none;
+            background-color: #efefef;
+            color: #428bca;
+        }
+
+.main-container h4 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #2b9bfd;
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+.main-container .table {
+    font-size: 0.9em;
+}
+
+    .main-container .table thead {
+        color: #fff;
+        background: #30b734;
+    }
+
+        .main-container .table thead th {
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+.main-container .table-hover > tbody > tr:hover {
+    background: #d7dfe6;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    padding-top: 15px;
+    background-color: #f5f5f5;
+}
+
+    .footer > .container {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+.container .text-muted {
+    font-size: 0.8em;
+}
+
+/* Large desktops and laptops */
+@media (min-width: 1200px) {
+}
+
+/* Landscape tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+}
+
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {    
+    .menu-header .navbar-nav > li > a {
+        padding: 15px 15px;
+    }
+}
+
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+    .menu-header.navbar-default .navbar-toggle {
+        border-color: #fff;
+    }
+    .menu-header.navbar-default .navbar-toggle:focus, .menu-header.navbar-default .navbar-toggle:hover {
+        background: none;
+    }
+        .menu-header.navbar-default .navbar-toggle .icon-bar {
+            background-color: #fff;
+        }
+    .menu-header .navbar-collapse {
+        background-color: #428bca;
+        max-height: none;
+    }
+    .menu-header .navbar-nav > li > a {
+        float:none;
+    }
+}
+
+/* Portrait phones and smaller */
+@media (max-width: 480px) {
+    .vr-login {
+        width: 300px;
+    }
+
+    .vr-form {
+        max-width: 300px;
+    }
+}
